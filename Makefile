@@ -1,19 +1,19 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -pedantic
-TARGET = lab2_program
+TARGET = note2_program
 
 SRCDIR = src
-SRCS = $(SRCDIR)/client.c $(SRCDIR)/server.c
-OBJS = client.o server.o
-HEADERS = $(SRCDIR)/interface.h
+SRCS = $(SRCDIR)/main.c $(SRCDIR)/note2_server.c
+OBJS = main.o note2_server.o
+HEADERS = $(SRCDIR)/note2.h
 
 all: $(TARGET)
 
-client.o: $(SRCDIR)/client.c $(HEADERS)
-	$(CC) $(CFLAGS) -I$(SRCDIR) -c $(SRCDIR)/client.c -o client.o
+main.o: $(SRCDIR)/main.c $(HEADERS)
+	$(CC) $(CFLAGS) -I$(SRCDIR) -c $(SRCDIR)/main.c -o main.o
 
-server.o: $(SRCDIR)/server.c $(HEADERS)
-	$(CC) $(CFLAGS) -I$(SRCDIR) -c $(SRCDIR)/server.c -o server.o
+note2_server.o: $(SRCDIR)/note2_server.c $(HEADERS)
+	$(CC) $(CFLAGS) -I$(SRCDIR) -c $(SRCDIR)/note2_server.c -o note2_server.o
 
 $(TARGET): $(OBJS)
 	$(CC) $(OBJS) -o $(TARGET)
