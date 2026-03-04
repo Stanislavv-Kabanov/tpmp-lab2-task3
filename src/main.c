@@ -1,31 +1,34 @@
+
 #include <stdio.h>
 #include <string.h>
 #include "note2.h"
 
 int main() {
-    printf("\n=== Лабораторная работа №2 ===\n");
-    printf("Структура NOTE2\n\n");
+    ZNAK mass[MAX_MASS];
+    int count = 0;
+    char search_zodiac[MAX_ZODIAC];
     
-    NOTE2 block[7];
-    getchar();
+    printf("=== Программа для работы со структурой ZNAK ===\n");
     
-    input_notes(block, 7);
+    input_znak(mass, &count);
     
-    sort_by_phone(block, 7);
-    
-    printf("\n=== Отсортированные записи ===\n");
-    for (int i = 0; i < 7; i++) {
-        printf("%d. %s - %s (%04d-%02d-%02d)\n", 
-               i + 1, block[i].name, block[i].tele,
-               block[i].date[0], block[i].date[1], block[i].date[2]);
+    if (count == 0) {
+        printf("Нет введенных данных.\n");
+        return 0;
     }
     
-    char search_surname[50];
-    printf("\nВведите фамилию для поиска: ");
-    fgets(search_surname, sizeof(search_surname), stdin);
-    search_surname[strcspn(search_surname, "\n")] = 0;
+    sort_by_date(mass, count);
     
-    search_by_surname(block, 7, search_surname);
+    printf("\nЗаписи, упорядоченные по дате рождения:\n");
+    for (int i = 0; i < count; i++) {
+        print_znak(&mass[i]);
+    }
+    
+    printf("\nВведите знак зодиака для поиска: ");
+    fgets(search_zodiac, MAX_ZODIAC, stdin);
+    search_zodiac[strcspn(search_zodiac, "\n")] = 0;
+    
+    search_by_zodiac(mass, count, search_zodiac);
     
     return 0;
 }
