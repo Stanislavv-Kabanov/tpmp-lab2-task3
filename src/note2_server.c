@@ -1,62 +1,73 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include "note2.h"
 
-void input_notes(NOTE2 block[], int size) {
-    printf("\n=== Ввод информации о %d людях ===\n", size);
+void input_znak(ZNAK *mass, int *count) {
+    printf("Введите информацию о людях (для завершения введите пустую фамилию):\n");
     
-    for (int i = 0; i < size; i++) {
-        printf("\n--- Человек %d ---\n", i + 1);
+    while (*count < MAX_MASS) {
+        printf("\nЗапись %d:\n", *count + 1);
         
-        printf("Введите фамилию и инициалы: ");
-        fgets(block[i].name, sizeof(block[i].name), stdin);
-        block[i].name[strcspn(block[i].name, "\n")] = 0;
+        printf("Фамилия и имя: ");
+        fgets(mass[*count].name, MAX_NAME, stdin);
+        mass[*count].name[strcspn(mass[*count].name, "\n")] = 0;
         
-        printf("Введите номер телефона: ");
-        fgets(block[i].tele, sizeof(block[i].tele), stdin);
-        block[i].tele[strcspn(block[i].tele, "\n")] = 0;
+        if (strlen(mass[*count].name) == 0) {
+            break;
+        }
         
-        printf("Введите дату рождения (год месяц число): ");
-        scanf("%d %d %d", &block[i].date[0], &block[i].date[1], 
-&block[i].date[2]);
+        printf("Знак зодиака: ");
+        fgets(mass[*count].zodiac, MAX_ZODIAC, stdin);
+        mass[*count].zodiac[strcspn(mass[*count].zodiac, "\n")] = 0;
+        
+        printf("Дата рождения (год месяц число): ");
+        scanf("%d %d %d", &mass[*count].date[0], &mass[*count].date[1], &mass[*count].date[2]);
         getchar();
+        
+        (*count)++;
     }
 }
 
-void sort_by_phone(NOTE2 block[], int size) {
-    for (int i = 0; i < size - 1; i++) {
-        for (int j = 0; j < size - i - 1; j++) {
-            int first_three1 = atoi(block[j].tele);
-            int first_three2 = atoi(block[j + 1].tele);
-            
-            if (first_three1 > first_three2) {
-                NOTE2 temp = block[j];
-                block[j] = block[j + 1];
-                block[j + 1] = temp;
+int compare_dates(const ZNAK *a, const ZNAK *b) {
+    if (a->date[0] != b->date[0]) return a->date[0] - b->date[0];
+    if (a->date[1] != b->date[1]) return a->date[1] - b->date[1];
+    return a->date[2] - b->date[2];
+}
+
+void sort_by_date(ZNAK *mass, int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (compare_dates(&mass[j], &mass[j + 1]) > 0) {
+                ZNAK temp = mass[j];
+                mass[j] = mass[j + 1];
+                mass[j + 1] = temp;
             }
         }
     }
-    printf("\n[СЕРВЕР] Массив отсортирован по первым трем цифрам телефона\n");
 }
 
-void search_by_surname(NOTE2 block[], int size, char surname[]) {
+void print_znak(const ZNAK *z) {
+    printf("%s | %s | %04d.%02d.%02d\n", 
+           z->name, 
+           z->zodiac,
+           z->date[0], 
+           z->date[1], 
+           z->date[2]);
+}
+
+void search_by_zodiac(ZNAK *mass, int count, char *zodiac) {
     int found = 0;
-    printf("\n=== Поиск человека с фамилией '%s' ===\n", surname);
     
-    for (int i = 0; i < size; i++) {
-        if (strstr(block[i].name, surname) != NULL) {
-            printf("\nНайдено: Фамилия и инициалы: %s\n", block[i].name);
-            printf("Номер телефона: %s\n", block[i].tele);
-            printf("Дата рождения: %04d-%02d-%02d\n", 
-                   block[i].date[0], block[i].date[1], block[i].date[2]);
-            found++;
+    printf("\nЛюди, родившиеся под знаком %s:\n", zodiac);
+    
+    for (int i = 0; i < count; i++) {
+        if (strcmp(mass[i].zodiac, zodiac) == 0) {
+            print_znak(&mass[i]);
+            found = 1;
         }
     }
     
-    if (found == 0) {
-        printf("Человек с фамилией %s не найден\n", surname);
-    } else {
-        printf("\nНайдено %d человек(а)\n", found);
+    if (!found) {
+        printf("Людей, родившихся под знаком %s, не найдено.\n", zodiac);
     }
 }
